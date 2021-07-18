@@ -1,0 +1,118 @@
+#Statistics_1
+
+id = None
+lens = []       
+seqs = {}       
+
+
+with open("file1") as fh:
+    for line in fh:
+        ln = line.rstrip("\n")      
+        if ln.startswith(">"):      
+            id = ln 
+        else:
+            if id in seqs:          
+                seqs[id] = seqs[id] + ln
+            else:                   
+                seqs[id] = ln
+                
+                
+ 
+for id in seqs:
+    lens.append(len(seqs[id]))
+    
+
+lens=sorted(lens) 
+
+
+print("Total seqs: {}".format(len(lens)))
+print("Minimal: {} bp".format(lens[0]))
+print("Maximal: {} bp".format(lens[-1]))
+print("Mean: {} bp".format( sum(lens) / len(lens) ))
+
+
+# Statistics_2
+
+library("Biostrings")
+
+dnaseq <- readDNAStringSet("file2")
+dnaseq
+
+
+gc_content <- letterFrequency(dnaseq, letters = "GC", as.prob = TRUE)
+head(gc_content)
+
+
+mean(gc_content)
+
+
+sd(gc_content)
+
+
+range(gc_content)
+
+
+dnaseq[which(gc_content == max(gc_content))]
+
+
+hist(gc_content)
+hist(gc_content,breaks=200, main="Symbiodiniaceae", col="blue")
+
+
+
+plot(density(gc_content))
+
+
+library("tidyverse")
+p <- as_tibble(gc_content) %>%
+    ggplot(aes(x = `G|C`))
+p + geom_histogram()
+
+# GC content (density)
+
+p + geom_density()
+
+
+oligonucleotideFrequency(flyDNA,
+   width=3,
+   simplify.as="collapse")
+
+sort(dnaseq)
+
+
+#Expression
+
+library(limma)
+library(edgeR)
+
+x <- read.delim("file3)
+group <- factor(c(n))
+y <- DGEList(counts=x,group=group)
+y <- calcNormFactors(y)
+design <- model.matrix(~group)
+y <- estimateDisp(y,design)
+fit <- glmQLFit(y,design)
+qlf <- glmQLFTest(fit,coef=2)
+topTags(qlf)
+summary(decideTests(qlf)) 
+plotMD(qlf)
+keep <- rowSums(cpm(y)>1) >= 3
+y <- y[keep,]
+dim(y)
+y$samples$lib.size <- colSums(y$counts)
+
+y <- calcNormFactors(y)
+
+design <- model.matrix(~group)
+y <- estimateDisp(y,design)
+
+
+
+# Orthologs
+
+busco -i [SEQUENCE_FILE] -l [LINEAGE] -o [OUTPUT_NAME] -m [MODE] [OTHER OPTIONS]
+
+
+
+
+
