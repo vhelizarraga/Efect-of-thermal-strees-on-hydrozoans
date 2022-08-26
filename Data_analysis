@@ -80,23 +80,31 @@ oligonucleotideFrequency(flyDNA,
 sort(dnaseq)
 
 
+# Kallisto
+
+kallisto quant -i <kallisto_index> -o <output_dir> <read_1.fastq> <read_2.fastq>
+
+library("sleuth")
+base_dir<-(“/scratch/<netID>/kallisto-results/”)
+
+
 #Expression
 
 library(limma)
 library(edgeR)
 
-x <- read.delim("file3)
+x <- read.delim("file3)  # reading of expression counts
 group <- factor(c(n))
-y <- DGEList(counts=x,group=group)
+y <- DGEList(counts=x,group=group)  # DGE List
 y <- calcNormFactors(y)
 design <- model.matrix(~group)
-y <- estimateDisp(y,design)
+y <- estimateDisp(y,design)  # Estimation of dispersion
 fit <- glmQLFit(y,design)
-qlf <- glmQLFTest(fit,coef=2)
-topTags(qlf)
+qlf <- glmQLFTest(fit,coef=2) # quasi-likelihood ratio test
+topTags(qlf)               
 summary(decideTests(qlf)) 
-plotMD(qlf)
-keep <- rowSums(cpm(y)>1) >= 3
+plotMD(qlf)       # DEG graph
+keep <- rowSums(cpm(y)>1) >= 3 # Filtering
 y <- y[keep,]
 dim(y)
 y$samples$lib.size <- colSums(y$counts)
@@ -106,13 +114,13 @@ y <- calcNormFactors(y)
 design <- model.matrix(~group)
 y <- estimateDisp(y,design)
 
+# MDS plot 
 
+logcpm <- cpm(y, log=TRUE)
+plotMDS(y)   
 
 # Orthologs
 
 busco -i [SEQUENCE_FILE] -l [LINEAGE] -o [OUTPUT_NAME] -m [MODE] [OTHER OPTIONS]
-
-
-
 
 
